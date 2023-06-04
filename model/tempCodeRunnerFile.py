@@ -1,0 +1,1 @@
+[train_size, valida_size, valida_size]

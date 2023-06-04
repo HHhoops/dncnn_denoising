@@ -1,0 +1,190 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from attention import se_block, cbam_block, eca_block, CA_Block
+
+attention_blocks = [se_block, cbam_block, eca_block, CA_Block]
+
+# 定义DnCNN网络，包含17层卷积和CA注意力机制
+class DnCNN(nn.Module):
+    def __init__(self, channels, phi = None):
+        super(DnCNN, self).__init__()
+        kernel_size = 3
+        padding = 1
+        features = 64
+        
+        self.phi = phi
+        if self.phi is not None and self.phi >= 1 and self.phi <= 4:
+            self.feat1_attention = attention_blocks[self.phi - 1](64)
+            self.feat2_attention = attention_blocks[self.phi - 1](64)
+        else:
+            self.feat1_attention = None
+            self.feat2_attention = None
+
+
+        self.conv1 = nn.Conv2d(in_channels=channels, out_channels=features,
+                                kernel_size=kernel_size, padding=padding,  bias=False)
+        self.relu1 = nn.ReLU(inplace=True)
+
+# 连续16层卷积层
+        self.conv2 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn2 = nn.BatchNorm2d(features)
+        self.relu2 = nn.ReLU(inplace=True)
+
+        self.conv3 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn3 = nn.BatchNorm2d(features)
+        self.relu3 = nn.ReLU(inplace=True)
+
+        self.conv4 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn4 = nn.BatchNorm2d(features)
+        self.relu4 = nn.ReLU(inplace=True)
+
+        self.conv5 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn5 = nn.BatchNorm2d(features)
+        self.relu5 = nn.ReLU(inplace=True)
+
+        self.conv6 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn6 = nn.BatchNorm2d(features)
+        self.relu6 = nn.ReLU(inplace=True)
+
+        self.conv7 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn7 = nn.BatchNorm2d(features)
+        self.relu7 = nn.ReLU(inplace=True)
+
+        self.conv8 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn8 = nn.BatchNorm2d(features)
+        self.relu8 = nn.ReLU(inplace=True)
+
+        self.conv9 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn9 = nn.BatchNorm2d(features)
+        self.relu9 = nn.ReLU(inplace=True)
+
+        self.conv10 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn10 = nn.BatchNorm2d(features)
+        self.relu10 = nn.ReLU(inplace=True)
+
+        self.conv11 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn11 = nn.BatchNorm2d(features)
+        self.relu11 = nn.ReLU(inplace=True)
+
+        self.conv12 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn12 = nn.BatchNorm2d(features)
+        self.relu12 = nn.ReLU(inplace=True)
+
+        self.conv13 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn13 = nn.BatchNorm2d(features)
+        self.relu13 = nn.ReLU(inplace=True)
+        self.conv14 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn14 = nn.BatchNorm2d(features)
+        self.relu14 = nn.ReLU(inplace=True)
+
+        self.conv15 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn15 = nn.BatchNorm2d(features)
+        self.relu15 = nn.ReLU(inplace=True)
+
+        self.conv16 = nn.Conv2d(in_channels=features, out_channels=features,
+                                    kernel_size=kernel_size, padding=padding, bias=False)
+        self.bn16 = nn.BatchNorm2d(features)
+        self.relu16 = nn.ReLU(inplace=True)
+        
+        self.conv17 = nn.Conv2d(in_channels=features, out_channels=channels,
+                                kernel_size=kernel_size, padding=padding, bias=False)
+
+
+# 开始应用
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.relu1(out)
+        print('out1:', out.shape)
+
+        if self.feat1_attention is not None:
+            out = self.feat1_attention(out) * out
+            print('out1 att:', out.shape)
+            
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu2(out)
+        
+        out = self.conv3(out)
+        out = self.bn3(out)
+        out = self.relu3(out)
+        
+        out = self.conv4(out)
+        out = self.bn4(out)
+        out = self.relu4(out)
+        
+        out = self.conv5(out)
+        out = self.bn5(out)
+        out = self.relu5(out)
+        
+        out = self.conv6(out)
+        out = self.bn6(out)
+        out = self.relu6(out)
+
+        out = self.conv7(out)
+        out = self.bn7(out)
+        out = self.relu7(out)
+
+        out = self.conv8(out)
+        out = self.bn8(out)
+        out = self.relu8(out)
+
+        out = self.conv9(out)
+        out = self.bn9(out)
+        out = self.relu9(out)
+
+        out = self.conv10(out)
+        out = self.bn10(out)
+        out = self.relu10(out)
+
+        out = self.conv11(out)
+        out = self.bn11(out)
+        out = self.relu11(out)
+
+        out = self.conv12(out)
+        out = self.bn12(out)
+        out = self.relu12(out)
+
+        out = self.conv13(out)
+        out = self.bn13(out)
+        out = self.relu13(out)
+
+        out = self.conv14(out)
+        out = self.bn14(out)
+        out = self.relu14(out)
+
+        out = self.conv15(out)
+        out = self.bn15(out)
+        out = self.relu15(out)
+
+        out = self.conv16(out)
+        out = self.bn16(out)
+        out = self.relu16(out)
+        print('out16:', out.shape)
+
+        if self.feat2_attention is not None:
+            out = self.feat2_attention(out) * out
+            print('out2 att:', out.shape)
+
+        out = self.conv17(out)
+        print('out17:', out.shape)
+
+        return x - out
+       
+if __name__ == '__main__':
+    net = DnCNN(channels=1, phi = 1)
+    print(net)
