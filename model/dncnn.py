@@ -109,12 +109,10 @@ class DnCNN(nn.Module):
     def forward(self, x):
         out = self.conv1(x)
         out = self.relu1(out)
-        print('out1:', out.shape)
 
-        if self.feat1_attention is not None:
+        if self.phi is not None and self.phi >= 1 and self.phi <= 4:
             out = self.feat1_attention(out) * out
-            print('out1 att:', out.shape)
-            
+
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu2(out)
@@ -174,15 +172,12 @@ class DnCNN(nn.Module):
         out = self.conv16(out)
         out = self.bn16(out)
         out = self.relu16(out)
-        print('out16:', out.shape)
-
-        if self.feat2_attention is not None:
+       
+        if self.phi is not None and self.phi >= 1 and self.phi <= 4:
             out = self.feat2_attention(out) * out
-            print('out2 att:', out.shape)
-
+            
         out = self.conv17(out)
-        print('out17:', out.shape)
-
+       
         return x - out
        
 if __name__ == '__main__':
